@@ -14,6 +14,14 @@ class Otter {
       internalState: [],
       rawState: null,
     };
+    this._info = {
+      hasInitialized: false,
+      // hasStateChanged: false,
+      latest_changes_sent_to_server: false,
+      latest_changes_fetched_from_server: false,
+      save_to_local: false,
+      fetch_from_local: false,
+    };
   }
 
   init(inputArray, inputAttributes) {
@@ -28,7 +36,8 @@ class Otter {
       const groupingSchemaAndState = initRedux(this._otterInstance, approach);
       this.saveGroupingSchemaAndState(groupingSchemaAndState);
       this.generateInternalState(this._state.groupedState);
-      this.generateRawState(this._state.internalState)
+      this.generateRawState(this._state.internalState);
+      this._info.hasInitialized = true;
       // console.log(this._state);
     }
   }
@@ -60,7 +69,13 @@ class Otter {
   }
 
   generateRawState(internalState) {
-    this._state.rawState = internalState.map((item) => item[this._attributes.pKey]);
+    this._state.rawState = internalState.map(
+      (item) => item[this._attributes.pKey]
+    );
+  }
+
+  updatePosOnServerByPkey(pKey, pos) {
+
   }
 
 }
