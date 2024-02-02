@@ -9,10 +9,10 @@ const approachLogic = (inputArray) => {
       .filter((item) => item.pos)
       .map((item) => item.pos);
     if (
-      propExist(posArray, 'rpos') &&
-      isUnique(posArray, 'rpos') &&
-      propExist(posArray, 'index') &&
-      isUnique(posArray, 'index')
+      // propExist(posArray, 'rpos') &&
+      isUnique(posArray, 'rpos', 'countNull') &&
+      // propExist(posArray, 'index') &&
+      isUnique(posArray, 'index', 'countNull')
     ) {
       if (posArray.length === inputArray.length) {
         return 'all have pos';

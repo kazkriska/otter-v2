@@ -2,6 +2,8 @@ import xerox from '../utils/parsers/xerox.js';
 import isValid from './helpers/isValid.js';
 import approachLogic from './helpers/approachLogic.js';
 import initRedux from './helpers/initRedux.js';
+import db from '../../model/requestHandler.js';
+import pool from '../../model/database.js';
 
 class Otter {
   constructor() {
@@ -22,23 +24,30 @@ class Otter {
       save_to_local: false,
       fetch_from_local: false,
     };
+    this._serverConfig = {
+      pool: null,
+      tableName: null,
+      serverConfigured: false
+    };
   }
 
-  init(inputArray, inputAttributes) {
+  async init(inputArray, inputAttributes) {
     const isInputValid = isValid(inputArray, {
       ...this._attributes,
       ...inputAttributes,
     });
     const approach = approachLogic(inputArray);
-    if (isInputValid) {
+    if (isInputValid && this._serverConfig.serverConfigured) {
       this.saveInputArray(inputArray);
       this.saveInputAttributes(inputAttributes);
       const groupingSchemaAndState = initRedux(this._otterInstance, approach);
       this.saveGroupingSchemaAndState(groupingSchemaAndState);
       this.generateInternalState(this._state.groupedState);
+      this.updatePosOnServer(this._state.internalState);
       this.generateRawState(this._state.internalState);
       this._info.hasInitialized = true;
-      // console.log(this._state);
+    } else {
+      console.error('Could not initialize Otter');
     }
   }
 
@@ -74,10 +83,38 @@ class Otter {
     );
   }
 
-  updatePosOnServerByPkey(pKey, pos) {
-
+  updatePosOnServer(internalStateArray) {
+    internalStateArray.forEach((item) => {
+      // console.log(item)
+      db.updatePosForSingleEntry(item);
+    });
   }
 
+  configServer({ pool, tableName }) {
+    this._serverConfig.pool = pool;
+    this._serverConfig.tableName = tableName;
+    this._serverConfig.serverConfigured = true
+  }
+
+  async fetchData_dev() {
+    const data = await this._serverConfig.pool.query(`SELECT * FROM ${this._serverConfig.tableName}`);
+    return data.rows;
+  }
+
+  /*
+  // updateServerTest(data) {
+  //   db.updatePosForSingleEntry(data);
+  // }
+
+  // async readServerTest() {
+  //   const data = await db.readAllEntries();
+  //   return data;
+  // }
+  // async readServerUniqueTest(pKey) {
+  //   const data = await db.readSingleEntry(pKey);
+  //   return data;
+  // }
+  */
 }
 
 export default Otter;

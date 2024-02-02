@@ -1,5 +1,9 @@
-const isUnique = (inputArray, property) => {
+const isUnique = (inputArray, property, countNull ) => {
   const uniqueSet = new Set();
+
+  if (countNull === 'countNull') {
+    inputArray = inputArray.filter((item) => item[property] != null);
+  }
 
   for (const item of inputArray) {
     const value = property ? item[property] : item;

@@ -23,13 +23,13 @@ const initRedux = (otterInstance, approach) => {
     }
 
     case 'all have pos': {
-      groupingSchemaSetterFromExisting(_inputArray, state);
+      groupingSchemaSetterFromExisting(_inputArray,_attributes, state);
       groupedStateSetter(state, _inputArray, _attributes, approach);
       // console.log(state.groupedState['1']);
       return state;
     }
     case 'some have pos': {
-      groupingSchemaSetterFromExisting(_inputArray, state);
+      groupingSchemaSetterFromExisting(_inputArray,_attributes, state);
       groupedStateSetter(state, _inputArray, _attributes, approach);
       // console.log(state.groupedState['1']);
       return state;
@@ -41,15 +41,14 @@ const initRedux = (otterInstance, approach) => {
 };
 export default initRedux;
 
-function groupingSchemaSetterFromExisting(_inputArray, state) {
+function groupingSchemaSetterFromExisting(_inputArray,_attributes, state) {
   const filteredPosArray = _inputArray
     .filter((item) => item.pos)
     .map((item) => item);
-
   const groupNumberArray = [
     ...new Set(
       filteredPosArray.map(
-        (item) => `${item.cat}-${item.pos.rpos.toString().split('.')[0]}`
+        (item) => `${item[_attributes.groupWith]}-${item.pos.rpos.toString().split('.')[0]}`
       )
     ),
   ];
